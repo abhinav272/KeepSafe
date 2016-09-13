@@ -27,7 +27,9 @@ public class LoginActivity extends AppCompatActivity {
     private void setupUI() {
         mPinLockView = (PinLockView) findViewById(R.id.pin_lock_view);
         mIndicatorDots = (IndicatorDots) findViewById(R.id.indicator_dots);
-        mIndicatorDots.setPinLength(6);
+        if (mIndicatorDots != null) {
+            mIndicatorDots.setPinLength(6);
+        }
         mPinLockView.attachIndicatorDots(mIndicatorDots);
 
         mPinLockView.setPinLockListener(new PinLockListener() {

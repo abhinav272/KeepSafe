@@ -10,10 +10,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.abhinav.keepsafe.Utils.KeepSafeKeys;
+import com.abhinav.keepsafe.Utils.KeepSafePrefs;
+
 import java.util.HashSet;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,7 +27,12 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-              startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                intent = new Intent(SplashActivity.this, LoginActivity.class);
+                if(KeepSafePrefs.getInstance(SplashActivity.this).getKeepSafeUserPin()!=null)
+                    intent.putExtra(KeepSafeKeys.IS_USER_PIN_AVAILABLE, true);
+                else intent.putExtra(KeepSafeKeys.IS_USER_PIN_AVAILABLE, false);
+
+                startActivity(intent);
             }
         },2000);
 
