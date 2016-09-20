@@ -6,6 +6,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.abhinav.keepsafe.fragments.AddSafeItemFragment;
@@ -30,6 +33,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
+    }
+
+    public void setupSupportActionBar(Toolbar toolbar){
+        setSupportActionBar(toolbar);
     }
 
     private void addListFragment() {
