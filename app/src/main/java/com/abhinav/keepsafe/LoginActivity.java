@@ -59,6 +59,11 @@ public class LoginActivity extends AppCompatActivity {
                             KeepSafePrefs.getInstance().setKeepSafeUserPin(LoginActivity.this, pin1);
                             Toast.makeText(LoginActivity.this, "PIN saved", Toast.LENGTH_SHORT).show();
                             navigateToHome();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Pin Mismatch", Toast.LENGTH_SHORT).show();
+                            mPinLockView.resetPinLockView();
+                            pin1 = pin2 = null;
+                            tvBanner.setText(R.string.choose_pin_string);
                         }
                     }
                 } else {

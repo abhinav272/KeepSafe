@@ -37,7 +37,6 @@ public class KeepSafePrefs {
     }
 
     public String getKeepSafeUserPin(Context context){
-
         return getAppPreferences(context).getString(KEEPSAFE_USER_PIN,null);
     }
 
