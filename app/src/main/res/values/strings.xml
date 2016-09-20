@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">KeepSafe</string>
+    <string name="choose_pin_string">Please choose a PIN</string>
+    <string name="confirm_pin_string">Re-Enter the PIN to confirm</string>
 </resources>
