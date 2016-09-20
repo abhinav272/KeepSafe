@@ -18,29 +18,27 @@ public class KeepSafePrefs {
 
     }
 
-    private SharedPreferences getAppPreferences() {
-        if (sharedPreferences != null) {
-            sharedPreferences = mContext.getSharedPreferences(KEEPSAFE_SHARED_PREFS, Context.MODE_PRIVATE);
+    private SharedPreferences getAppPreferences(Context context) {
+        if (sharedPreferences == null) {
+            sharedPreferences = context.getSharedPreferences(KEEPSAFE_SHARED_PREFS, Context.MODE_PRIVATE);
         }
         return sharedPreferences;
     }
 
-    public static KeepSafePrefs getInstance(Context context) {
-        mContext = context;
-        if (keepSafePrefs != null) {
+    public static KeepSafePrefs getInstance() {
+        if (keepSafePrefs == null) {
             keepSafePrefs = new KeepSafePrefs();
         }
         return keepSafePrefs;
     }
 
-    public void setKeepSafeUserPin(String pin) {
-        getAppPreferences();
-        sharedPreferences.edit().putString(KEEPSAFE_USER_PIN, pin).apply();
+    public void setKeepSafeUserPin(Context context, String pin) {
+        getAppPreferences(context).edit().putString(KEEPSAFE_USER_PIN, pin).apply();
     }
 
-    public String getKeepSafeUserPin(){
-        getAppPreferences();
-        return sharedPreferences.getString(KEEPSAFE_USER_PIN,null);
+    public String getKeepSafeUserPin(Context context){
+
+        return getAppPreferences(context).getString(KEEPSAFE_USER_PIN,null);
     }
 
 }

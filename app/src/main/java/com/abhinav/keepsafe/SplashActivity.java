@@ -28,11 +28,12 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 intent = new Intent(SplashActivity.this, LoginActivity.class);
-                if(KeepSafePrefs.getInstance(SplashActivity.this).getKeepSafeUserPin()!=null)
+                if(KeepSafePrefs.getInstance().getKeepSafeUserPin(SplashActivity.this)!=null)
                     intent.putExtra(KeepSafeKeys.IS_USER_PIN_AVAILABLE, true);
                 else intent.putExtra(KeepSafeKeys.IS_USER_PIN_AVAILABLE, false);
 
                 startActivity(intent);
+                finish();
             }
         },2000);
 
