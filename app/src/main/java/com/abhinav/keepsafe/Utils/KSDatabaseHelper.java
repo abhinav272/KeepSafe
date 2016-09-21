@@ -1,15 +1,22 @@
 package com.abhinav.keepsafe.Utils;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by abhinav.sharma on 9/21/2016.
  */
 public class KSDatabaseHelper extends SQLiteOpenHelper {
+
+    private static final String TAG = KSDatabaseHelper.class.getSimpleName();
 
     public static final class TableEntries implements BaseColumns {
         public static final String DATABASE_NAME = "KS_DATABASE";
@@ -32,7 +39,7 @@ public class KSDatabaseHelper extends SQLiteOpenHelper {
             + " )";
     private static final String GET_ALL_ITEMS = "SELECT * FROM " + TableEntries.TABLE_NAME;
 
-    public static KSDatabaseHelper getInstance(Context context){
+    public static KSDatabaseHelper getInstance(Context context) {
         if (ksDatabaseHelper == null) {
             ksDatabaseHelper = new KSDatabaseHelper(context, TableEntries.DATABASE_NAME, null, TableEntries.DB_VERSION);
         }
@@ -54,7 +61,40 @@ public class KSDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public Cursor getAllItems(KSDatabaseHelper ksDatabaseHelper){
+    public List<AccountModel> getAllItems(KSDatabaseHelper ksDatabaseHelper) {
         SQLiteDatabase database = ksDatabaseHelper.getReadableDatabase();
+        Cursor cursor = database.rawQuery(GET_ALL_ITEMS, null);
+        return getAccountModelFromCursor(cursor);
+    }
+
+    private List<AccountModel> getAccountModelFromCursor(Cursor cursor) {
+        List<AccountModel> accountModelList = null;
+        if (cursor != null && cursor.getCount() > 0) {
+             accountModelList = new ArrayList<>();
+            cursor.moveToFirst();
+            while (cursor.moveToNext()) {
+                AccountModel ac = new AccountModel();
+                ac.setAccountID(cursor.getString(cursor.getColumnIndex(TableEntries._ID)));
+                ac.setAccountType(cursor.getString(cursor.getColumnIndex(TableEntries.COL_ITEM_TYPE)));
+                ac.setAccountName(cursor.getString(cursor.getColumnIndex(TableEntries.COL_ITEM_NAME)));
+                ac.setAccountPassword(cursor.getString(cursor.getColumnIndex(TableEntries.COL_ITEM_PASSWORD)));
+                ac.setAccountTranPassword(cursor.getString(cursor.getColumnIndex(TableEntries.COL_ITEM_TRAN_PASSWORD)));
+                accountModelList.add(ac);
+            }
+        }
+
+        return accountModelList;
+    }
+
+    public void saveAccountData(KSDatabaseHelper ksDatabaseHelper, AccountModel accountModel){
+        SQLiteDatabase database = ksDatabaseHelper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(TableEntries.COL_ITEM_TYPE, accountModel.getAccountType());
+        cv.put(TableEntries.COL_ITEM_NAME, accountModel.getAccountName());
+        cv.put(TableEntries.COL_ITEM_PASSWORD, accountModel.getAccountPassword());
+        cv.put(TableEntries.COL_ITEM_TRAN_PASSWORD, accountModel.getAccountTranPassword());
+
+        database.insert(TableEntries.TABLE_NAME, null, cv);
+        Log.e(TAG, "saveAccountData: item added for "+ accountModel.getAccountName());
     }
 }
