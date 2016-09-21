@@ -1,5 +1,7 @@
 package com.abhinav.keepsafe.fragments;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +21,7 @@ import android.widget.RadioGroup;
 import com.abhinav.keepsafe.HomeActivity;
 import com.abhinav.keepsafe.R;
 import com.abhinav.keepsafe.Utils.AccountModel;
+import com.abhinav.keepsafe.Utils.KSDatabaseHelper;
 import com.abhinav.keepsafe.Utils.KeepSafeKeys;
 
 /**
@@ -48,7 +51,7 @@ public class AddSafeItemFragment extends BaseFragment implements CompoundButton.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (validations()) {
-            addAccountToDB(getAccountModel());
+            new AddAccountTask(getActivity()).execute(getAccountModel());
             showToast("Item saved");
             getFragmentManager().popBackStack();
         } else showToast("Kuch to gadbad h Daya!! ;)");
@@ -123,6 +126,27 @@ public class AddSafeItemFragment extends BaseFragment implements CompoundButton.
                     tranPassword.setText("");
                     break;
             }
+        }
+    }
+
+    public class AddAccountTask extends AsyncTask<AccountModel, Void, Void> {
+
+        private Context mContext;
+
+        public AddAccountTask(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        protected Void doInBackground(AccountModel... params) {
+            KSDatabaseHelper.getInstance(mContext).saveAccountData(params[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            ((HomeActivity)mContext).updateKSListFragment();
+            super.onPostExecute(aVoid);
         }
     }
 }

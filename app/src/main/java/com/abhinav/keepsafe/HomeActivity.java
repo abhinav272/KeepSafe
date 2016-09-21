@@ -65,6 +65,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         fragmentTransaction.commit();
     }
 
+    public void updateKSListFragment(){
+        KSListFragment ksListFragment = (KSListFragment) getSupportFragmentManager().findFragmentByTag(KSListFragment.class.getSimpleName());
+        ksListFragment.fetchUpdatedListFromDB();
+    }
+
     @Override
     public void onBackStackChanged() {
         if(getSupportFragmentManager().getBackStackEntryCount()==0)
