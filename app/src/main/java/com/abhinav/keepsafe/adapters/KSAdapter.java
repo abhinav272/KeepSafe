@@ -1,0 +1,72 @@
+package com.abhinav.keepsafe.adapters;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.abhinav.keepsafe.R;
+import com.abhinav.keepsafe.Utils.AccountModel;
+import com.abhinav.keepsafe.Utils.KeepSafeKeys;
+
+import java.util.List;
+
+/**
+ * Created by abhinav.sharma on 9/21/2016.
+ */
+public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
+
+    private Context mContext;
+    private List<AccountModel> accountModels;
+    private LayoutInflater inflater;
+
+    public KSAdapter(Context mContext, List<AccountModel> accountModels){
+        this.mContext = mContext;
+        this.accountModels = accountModels;
+        inflater = LayoutInflater.from(mContext);
+    }
+
+    @Override
+    public KSViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.single_account_layout, parent, false);
+        KSViewHolder ksViewHolder = new KSViewHolder(view);
+        return ksViewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(KSViewHolder holder, int position) {
+        holder.itemName.setText(accountModels.get(position).getAccountName());
+        holder.itemType.setText(accountModels.get(position).getAccountType());
+        switch (accountModels.get(position).getAccountType()){
+            case KeepSafeKeys.BANK:
+                holder.tranPassword.setText(accountModels.get(position).getAccountTranPassword());
+                break;
+            default:
+                holder.tranPassword.setVisibility(View.GONE);
+                holder.ivTranPass.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return accountModels.size();
+    }
+
+    public class KSViewHolder extends RecyclerView.ViewHolder{
+        TextView itemName, itemType, password, tranPassword;
+        ImageView ivPass, ivTranPass;
+        public KSViewHolder(View itemView) {
+            super(itemView);
+            itemName = (TextView) itemView.findViewById(R.id.tv_item_name);
+            itemType = (TextView) itemView.findViewById(R.id.tv_item_type);
+            password = (TextView) itemView.findViewById(R.id.tv_password);
+            tranPassword = (TextView) itemView.findViewById(R.id.tv_tran_password);
+            ivPass = (ImageView) itemView.findViewById(R.id.iv_password);
+            ivTranPass = (ImageView) itemView.findViewById(R.id.iv_tran_password);
+        }
+    }
+}
