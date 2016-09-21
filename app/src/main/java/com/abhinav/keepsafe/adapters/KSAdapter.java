@@ -1,7 +1,10 @@
 package com.abhinav.keepsafe.adapters;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +25,13 @@ public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
     private Context mContext;
     private List<AccountModel> accountModels;
     private LayoutInflater inflater;
+    private ClipboardManager clipboard;
 
     public KSAdapter(Context mContext, List<AccountModel> accountModels){
         this.mContext = mContext;
         this.accountModels = accountModels;
         inflater = LayoutInflater.from(mContext);
+        clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
     }
 
     @Override
@@ -37,7 +42,7 @@ public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(KSViewHolder holder, int position) {
+    public void onBindViewHolder(final KSViewHolder holder, int position) {
         holder.itemName.setText(accountModels.get(position).getAccountName());
         holder.itemType.setText(accountModels.get(position).getAccountType());
         switch (accountModels.get(position).getAccountType()){
@@ -49,6 +54,20 @@ public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
                 holder.ivTranPass.setVisibility(View.GONE);
                 break;
         }
+        holder.ivPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipData clip = ClipData.newPlainText(null, holder.password.getText().toString());
+                clipboard.setPrimaryClip(clip);
+            }
+        });
+        holder.ivTranPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipData clip = ClipData.newPlainText(null, holder.tranPassword.getText().toString());
+                clipboard.setPrimaryClip(clip);
+            }
+        });
     }
 
     @Override
