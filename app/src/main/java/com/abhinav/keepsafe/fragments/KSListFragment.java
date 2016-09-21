@@ -65,11 +65,13 @@ public class KSListFragment extends BaseFragment {
         @Override
         protected void onPostExecute(List<AccountModel> list) {
             super.onPostExecute(list);
-            accountModels.clear();
-            for (AccountModel model : list) {
-                accountModels.add(model);
+            if (list != null) {
+                accountModels.clear();
+                for (AccountModel model : list) {
+                    accountModels.add(model);
+                }
+                ksAdapter.notifyDataSetChanged();
             }
-            ksAdapter.notifyDataSetChanged();
         }
     }
 
