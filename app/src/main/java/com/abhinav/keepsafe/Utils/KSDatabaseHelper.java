@@ -1,6 +1,7 @@
 package com.abhinav.keepsafe.Utils;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
@@ -8,7 +9,7 @@ import android.provider.BaseColumns;
 /**
  * Created by abhinav.sharma on 9/21/2016.
  */
-public class KSDatabase extends SQLiteOpenHelper {
+public class KSDatabaseHelper extends SQLiteOpenHelper {
 
     public static final class TableEntries implements BaseColumns {
         public static final String DATABASE_NAME = "KS_DATABASE";
@@ -20,7 +21,7 @@ public class KSDatabase extends SQLiteOpenHelper {
         public static final int DB_VERSION = 1;
     }
 
-    private static KSDatabase ksDatabase = null;
+    private static KSDatabaseHelper ksDatabaseHelper = null;
     private static final String QUERY_CREATE_TABLE = "CREATE TABLE " + TableEntries.TABLE_NAME +
             "("
             + TableEntries._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -31,15 +32,15 @@ public class KSDatabase extends SQLiteOpenHelper {
             + " )";
     private static final String GET_ALL_ITEMS = "SELECT * FROM " + TableEntries.TABLE_NAME;
 
-    public static KSDatabase getInstance(Context context){
-        if (ksDatabase == null) {
-            ksDatabase = new KSDatabase(context, TableEntries.DATABASE_NAME, null, TableEntries.DB_VERSION);
+    public static KSDatabaseHelper getInstance(Context context){
+        if (ksDatabaseHelper == null) {
+            ksDatabaseHelper = new KSDatabaseHelper(context, TableEntries.DATABASE_NAME, null, TableEntries.DB_VERSION);
         }
 
-        return ksDatabase;
+        return ksDatabaseHelper;
     }
 
-    private KSDatabase(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    private KSDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
 
@@ -51,5 +52,9 @@ public class KSDatabase extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    public Cursor getAllItems(KSDatabaseHelper ksDatabaseHelper){
+        SQLiteDatabase database = ksDatabaseHelper.getReadableDatabase();
     }
 }
