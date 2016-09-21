@@ -35,7 +35,7 @@ public class KSDatabaseHelper extends SQLiteOpenHelper {
             + TableEntries.COL_ITEM_NAME + " TEXT, "
             + TableEntries.COL_ITEM_TYPE + " TEXT, "
             + TableEntries.COL_ITEM_PASSWORD + " TEXT, "
-            + TableEntries.COL_ITEM_TRAN_PASSWORD + " TEXT, "
+            + TableEntries.COL_ITEM_TRAN_PASSWORD + " TEXT "
             + " )";
     private static final String GET_ALL_ITEMS = "SELECT * FROM " + TableEntries.TABLE_NAME;
 
@@ -61,7 +61,7 @@ public class KSDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<AccountModel> getAllItems(KSDatabaseHelper ksDatabaseHelper) {
+    public List<AccountModel> getAllItems() {
         SQLiteDatabase database = ksDatabaseHelper.getReadableDatabase();
         Cursor cursor = database.rawQuery(GET_ALL_ITEMS, null);
         return getAccountModelFromCursor(cursor);
@@ -86,7 +86,7 @@ public class KSDatabaseHelper extends SQLiteOpenHelper {
         return accountModelList;
     }
 
-    public void saveAccountData(KSDatabaseHelper ksDatabaseHelper, AccountModel accountModel){
+    public void saveAccountData(AccountModel accountModel){
         SQLiteDatabase database = ksDatabaseHelper.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(TableEntries.COL_ITEM_TYPE, accountModel.getAccountType());

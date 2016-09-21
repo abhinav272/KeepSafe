@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,9 +14,12 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.abhinav.keepsafe.HomeActivity;
 import com.abhinav.keepsafe.R;
+import com.abhinav.keepsafe.Utils.AccountModel;
+import com.abhinav.keepsafe.Utils.KeepSafeKeys;
 
 /**
  * Created by abhinav.sharma on 9/20/2016.
@@ -24,6 +28,7 @@ public class AddSafeItemFragment extends BaseFragment implements CompoundButton.
 
     EditText itemName, password, tranPassword;
     RadioButton radioBank, radioEmail, radioOther;
+    private RadioGroup rg;
 
     @Nullable
     @Override
@@ -42,18 +47,49 @@ public class AddSafeItemFragment extends BaseFragment implements CompoundButton.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(validations()){
+        if (validations()) {
+            addAccountToDB(getAccountModel());
             showToast("Item saved");
             getFragmentManager().popBackStack();
-        }
+        } else showToast("Kuch to gadbad h Daya!! ;)");
         return super.onOptionsItemSelected(item);
     }
 
+    private AccountModel getAccountModel() {
+        AccountModel accountModel = new AccountModel();
+        accountModel.setAccountName(itemName.getText().toString().trim());
+        switch (rg.getCheckedRadioButtonId()) {
+            case R.id.radio_bank:
+                accountModel.setAccountType(KeepSafeKeys.BANK);
+                accountModel.setAccountTranPassword(tranPassword.getText().toString());
+                break;
+            case R.id.radio_email:
+                accountModel.setAccountType(KeepSafeKeys.EMAIL);
+                break;
+            case R.id.radio_other:
+                accountModel.setAccountType(KeepSafeKeys.OTHERS);
+                break;
+        }
+        accountModel.setAccountPassword(password.getText().toString());
+        return accountModel;
+    }
+
     private boolean validations() {
+        if (itemName == null || TextUtils.getTrimmedLength(itemName.getText().toString()) == 0)
+            return false;
+        if (password == null || TextUtils.getTrimmedLength(password.getText().toString()) == 0)
+            return false;
+        if (rg != null){
+            if(rg.getCheckedRadioButtonId() == -1)
+                return false;
+            if(rg.getCheckedRadioButtonId() == R.id.radio_bank && TextUtils.getTrimmedLength(tranPassword.getText().toString())==0)
+                return false;
+        }
         return true;
     }
 
     private void setupUI(View view) {
+        rg = (RadioGroup) view.findViewById(R.id.radio_group);
         itemName = (EditText) view.findViewById(R.id.et_item_name);
         password = (EditText) view.findViewById(R.id.et_password);
         tranPassword = (EditText) view.findViewById(R.id.et_tran_prassword);
@@ -62,20 +98,19 @@ public class AddSafeItemFragment extends BaseFragment implements CompoundButton.
         radioOther = (RadioButton) view.findViewById(R.id.radio_other);
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.app_bar);
-        ((HomeActivity)getActivity()).setupSupportActionBar(toolbar);
+        ((HomeActivity) getActivity()).setupSupportActionBar(toolbar);
 
         radioBank.setOnCheckedChangeListener(this);
         radioEmail.setOnCheckedChangeListener(this);
         radioOther.setOnCheckedChangeListener(this);
 
         radioBank.setChecked(true);
-
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if(isChecked){
-            switch (buttonView.getId()){
+        if (isChecked) {
+            switch (buttonView.getId()) {
                 case R.id.radio_bank:
                     tranPassword.setVisibility(View.VISIBLE);
                     break;
