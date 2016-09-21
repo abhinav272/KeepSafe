@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "PIN saved", Toast.LENGTH_SHORT).show();
                             navigateToHome();
                         } else {
-                            Toast.makeText(LoginActivity.this, "Pin Mismatch", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "PIN Mismatch", Toast.LENGTH_SHORT).show();
                             mPinLockView.resetPinLockView();
                             pin1 = pin2 = null;
                             tvBanner.setText(R.string.choose_pin_string);
@@ -69,6 +69,10 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     if(pin.equals(KeepSafePrefs.getInstance().getKeepSafeUserPin(LoginActivity.this)))
                         navigateToHome();
+                    else {
+                        mPinLockView.resetPinLockView();
+                        Toast.makeText(LoginActivity.this, "Incorrect PIN", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
