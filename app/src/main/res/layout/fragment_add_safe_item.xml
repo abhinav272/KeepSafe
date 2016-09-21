@@ -27,11 +27,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/et_item_name"
         android:layout_marginEnd="16dp"
+        android:orientation="horizontal"
         android:layout_marginStart="16dp">
 
         <RadioButton
             android:id="@+id/radio_bank"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/radio_text_bank"
@@ -39,15 +40,17 @@
 
         <RadioButton
             android:id="@+id/radio_email"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
             android:text="@string/radio_text_email"
             android:textSize="16sp" />
 
         <RadioButton
             android:id="@+id/radio_other"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/radio_text_other"

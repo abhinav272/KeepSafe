@@ -54,7 +54,7 @@ public class AddSafeItemFragment extends BaseFragment implements CompoundButton.
             new AddAccountTask(getActivity()).execute(getAccountModel());
             showToast("Item saved");
             getFragmentManager().popBackStack();
-        } else showToast("Kuch to gadbad h Daya!! ;)");
+        } else showToast("You are missing out something");
         return super.onOptionsItemSelected(item);
     }
 

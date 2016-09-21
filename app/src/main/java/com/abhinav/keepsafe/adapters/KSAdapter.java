@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.abhinav.keepsafe.R;
 import com.abhinav.keepsafe.Utils.AccountModel;
@@ -59,6 +60,7 @@ public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
             public void onClick(View v) {
                 ClipData clip = ClipData.newPlainText(null, holder.password.getText().toString());
                 clipboard.setPrimaryClip(clip);
+                Toast.makeText(mContext, "Text copied", Toast.LENGTH_SHORT).show();
             }
         });
         holder.ivTranPass.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +68,7 @@ public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
             public void onClick(View v) {
                 ClipData clip = ClipData.newPlainText(null, holder.tranPassword.getText().toString());
                 clipboard.setPrimaryClip(clip);
+                Toast.makeText(mContext, "Text copied", Toast.LENGTH_SHORT).show();
             }
         });
     }
