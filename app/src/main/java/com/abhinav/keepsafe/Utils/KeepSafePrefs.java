@@ -13,6 +13,7 @@ public class KeepSafePrefs {
     private SharedPreferences sharedPreferences;
     private static final String KEEPSAFE_SHARED_PREFS = "keepsafe_shared_prefs";
     private static final String KEEPSAFE_USER_PIN = "keepsafe_user_pin";
+    private static final String KEEPSAFE_SAFE_STRING = "safe_string";
 
     private KeepSafePrefs (){
 
@@ -40,4 +41,11 @@ public class KeepSafePrefs {
         return getAppPreferences(context).getString(KEEPSAFE_USER_PIN,null);
     }
 
+    public void setSafeItem(Context context, String s) {
+        getAppPreferences(context).edit().putString(KEEPSAFE_SAFE_STRING, s).apply();
+    }
+
+    public String getSafeItem(Context context) {
+        return getAppPreferences(context).getString(KEEPSAFE_SAFE_STRING, "");
+    }
 }
