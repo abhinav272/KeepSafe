@@ -7,4 +7,6 @@
     <string name="radio_text_other">other</string>
     <string name="text_password">Enter Password</string>
     <string name="text_tran_password">Enter Transaction Password</string>
+    <string name="accessibility_service_label">KeepSafe</string>
+    <string name="accessibility_service_description">Allows app to monitor your password leakage. If this service is on you will only be able to paste your copied password in a Password field and that to only once.</string>
 </resources>

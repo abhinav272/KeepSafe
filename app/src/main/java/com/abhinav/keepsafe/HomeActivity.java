@@ -1,5 +1,6 @@
 package com.abhinav.keepsafe;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,7 @@ import android.view.View;
 
 import com.abhinav.keepsafe.fragments.AddSafeItemFragment;
 import com.abhinav.keepsafe.fragments.KSListFragment;
+import com.abhinav.keepsafe.services.KeepSafeService;
 
 /**
  * Created by indianrenters on 9/12/16.
@@ -26,6 +28,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         setupUI();
+        startService(new Intent(HomeActivity.this, KeepSafeService.class));
     }
 
     private void setupUI() {

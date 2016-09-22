@@ -60,7 +60,7 @@ public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
             public void onClick(View v) {
                 ClipData clip = ClipData.newPlainText(null, holder.password.getText().toString());
                 clipboard.setPrimaryClip(clip);
-                Toast.makeText(mContext, "Text copied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, holder.password.getText().toString()+" copied", Toast.LENGTH_SHORT).show();
             }
         });
         holder.ivTranPass.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +68,7 @@ public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
             public void onClick(View v) {
                 ClipData clip = ClipData.newPlainText(null, holder.tranPassword.getText().toString());
                 clipboard.setPrimaryClip(clip);
-                Toast.makeText(mContext, "Text copied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, holder.tranPassword.getText().toString()+" copied", Toast.LENGTH_SHORT).show();
             }
         });
     }
