@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.abhinav.keepsafe.R;
 import com.abhinav.keepsafe.Utils.AccountModel;
 import com.abhinav.keepsafe.Utils.KeepSafeKeys;
+import com.abhinav.keepsafe.Utils.KeepSafePrefs;
 
 import java.util.List;
 
@@ -26,13 +27,12 @@ public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
     private Context mContext;
     private List<AccountModel> accountModels;
     private LayoutInflater inflater;
-    private ClipboardManager clipboard;
+
 
     public KSAdapter(Context mContext, List<AccountModel> accountModels){
         this.mContext = mContext;
         this.accountModels = accountModels;
         inflater = LayoutInflater.from(mContext);
-        clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
     }
 
     @Override
@@ -58,16 +58,14 @@ public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
         holder.ivPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ClipData clip = ClipData.newPlainText(null, holder.password.getText().toString());
-                clipboard.setPrimaryClip(clip);
+                KeepSafePrefs.getInstance().setSafeItem(mContext, holder.password.getText().toString());
                 Toast.makeText(mContext, holder.password.getText().toString()+" copied", Toast.LENGTH_SHORT).show();
             }
         });
         holder.ivTranPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ClipData clip = ClipData.newPlainText(null, holder.tranPassword.getText().toString());
-                clipboard.setPrimaryClip(clip);
+                KeepSafePrefs.getInstance().setSafeItem(mContext, holder.tranPassword.getText().toString());
                 Toast.makeText(mContext, holder.tranPassword.getText().toString()+" copied", Toast.LENGTH_SHORT).show();
             }
         });
