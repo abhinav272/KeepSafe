@@ -41,7 +41,7 @@ public class KeepSafeService extends AccessibilityService {
                     && event.getItemCount() == safeText.length()) {
                 ClipData clip = ClipData.newPlainText(null, oldText);
                 clipboard.setPrimaryClip(clip);
-                KeepSafePrefs.getInstance().setKeepSafeUserPin(getApplicationContext(), null);
+                KeepSafePrefs.getInstance().setSafeItem(getApplicationContext(), null);
                 Log.e(TAG, "onAccessibilityEvent: yo man all shit cleaned!!");
             }
         }
