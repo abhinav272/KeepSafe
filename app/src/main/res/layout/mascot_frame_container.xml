@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingTop="50dp"
+    android:paddingBottom="10dp"
+    android:paddingStart="5dp"
+    android:paddingEnd="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        layout="@layout/fragment_ks_list"
+        android:id="@+id/mascot_ks_list"/>
+
+
+</RelativeLayout>

@@ -2,15 +2,12 @@ package com.abhinav.keepsafe.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,9 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.abhinav.keepsafe.R;
@@ -31,11 +26,13 @@ import com.abhinav.keepsafe.R;
 public class MascotService extends Service {
     private static final String TAG = MascotService.class.getSimpleName();
     private WindowManager windowManager;
-    private RelativeLayout chatheadView, removeView;
+    private RelativeLayout chatheadView, removeView, mascotView;
     private ImageView chatheadImg, removeImg;
     private int x_init_cord, y_init_cord, x_init_margin, y_init_margin;
     private Point szWindow = new Point();
     private boolean isLeft = true;
+    private boolean isMascotExpanded = false;
+    private int lastYCord = 0;
 
     @SuppressWarnings("deprecation")
 
@@ -43,16 +40,40 @@ public class MascotService extends Service {
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
+        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         Log.d(TAG, "ChatHeadService.onCreate()");
 
     }
 
-    private void handleStart(){
-        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
-        LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+    private void openMascot() {
+        isMascotExpanded = true;
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        mascotView = (RelativeLayout) inflater.inflate(R.layout.mascot_frame_container, null);
+        WindowManager.LayoutParams fragmentContainerParams = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT);
 
-        removeView = (RelativeLayout)inflater.inflate(R.layout.remove, null);
+        mascotView.findViewById(R.id.app_bar).setVisibility(View.GONE);
+        windowManager.addView(mascotView, fragmentContainerParams);
+        moveMascotToFront();
+        populateKSList();
+
+    }
+
+    private void populateKSList() {
+
+    }
+
+    private void handleStart() {
+//        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        removeView = (RelativeLayout) inflater.inflate(R.layout.remove, null);
         WindowManager.LayoutParams paramRemove = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -62,12 +83,12 @@ public class MascotService extends Service {
         paramRemove.gravity = Gravity.TOP | Gravity.LEFT;
 
         removeView.setVisibility(View.GONE);
-        removeImg = (ImageView)removeView.findViewById(R.id.remove_img);
+        removeImg = (ImageView) removeView.findViewById(R.id.remove_img);
         windowManager.addView(removeView, paramRemove);
 
 
         chatheadView = (RelativeLayout) inflater.inflate(R.layout.chathead, null);
-        chatheadImg = (ImageView)chatheadView.findViewById(R.id.chathead_img);
+        chatheadImg = (ImageView) chatheadView.findViewById(R.id.chathead_img);
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -86,7 +107,8 @@ public class MascotService extends Service {
                 PixelFormat.TRANSLUCENT);
         params.gravity = Gravity.TOP | Gravity.LEFT;
         params.x = 0;
-        params.y = 100;
+        params.y = 200;
+        lastYCord = 200;
         windowManager.addView(chatheadView, params);
 
         chatheadView.setOnTouchListener(new View.OnTouchListener() {
@@ -138,18 +160,18 @@ public class MascotService extends Service {
                         x_cord_Destination = x_init_margin + x_diff_move;
                         y_cord_Destination = y_init_margin + y_diff_move;
 
-                        if(isLongclick){
-                            int x_bound_left = szWindow.x / 2 - (int)(remove_img_width * 1.5);
-                            int x_bound_right = szWindow.x / 2 +  (int)(remove_img_width * 1.5);
-                            int y_bound_top = szWindow.y - (int)(remove_img_height * 1.5);
+                        if (isLongclick) {
+                            int x_bound_left = szWindow.x / 2 - (int) (remove_img_width * 1.5);
+                            int x_bound_right = szWindow.x / 2 + (int) (remove_img_width * 1.5);
+                            int y_bound_top = szWindow.y - (int) (remove_img_height * 1.5);
 
-                            if((x_cord >= x_bound_left && x_cord <= x_bound_right) && y_cord >= y_bound_top){
+                            if ((x_cord >= x_bound_left && x_cord <= x_bound_right) && y_cord >= y_bound_top) {
                                 inBounded = true;
 
                                 int x_cord_remove = (int) ((szWindow.x - (remove_img_height * 1.5)) / 2);
-                                int y_cord_remove = (int) (szWindow.y - ((remove_img_width * 1.5) + getStatusBarHeight() ));
+                                int y_cord_remove = (int) (szWindow.y - ((remove_img_width * 1.5) + getStatusBarHeight()));
 
-                                if(removeImg.getLayoutParams().height == remove_img_height){
+                                if (removeImg.getLayoutParams().height == remove_img_height) {
                                     removeImg.getLayoutParams().height = (int) (remove_img_height * 1.5);
                                     removeImg.getLayoutParams().width = (int) (remove_img_width * 1.5);
 
@@ -161,18 +183,18 @@ public class MascotService extends Service {
                                 }
 
                                 layoutParams.x = x_cord_remove + (Math.abs(removeView.getWidth() - chatheadView.getWidth())) / 2;
-                                layoutParams.y = y_cord_remove + (Math.abs(removeView.getHeight() - chatheadView.getHeight())) / 2 ;
+                                layoutParams.y = y_cord_remove + (Math.abs(removeView.getHeight() - chatheadView.getHeight())) / 2;
 
                                 windowManager.updateViewLayout(chatheadView, layoutParams);
                                 break;
-                            }else{
+                            } else {
                                 inBounded = false;
                                 removeImg.getLayoutParams().height = remove_img_height;
                                 removeImg.getLayoutParams().width = remove_img_width;
 
                                 WindowManager.LayoutParams param_remove = (WindowManager.LayoutParams) removeView.getLayoutParams();
                                 int x_cord_remove = (szWindow.x - removeView.getWidth()) / 2;
-                                int y_cord_remove = szWindow.y - (removeView.getHeight() + getStatusBarHeight() );
+                                int y_cord_remove = szWindow.y - (removeView.getHeight() + getStatusBarHeight());
 
                                 param_remove.x = x_cord_remove;
                                 param_remove.y = y_cord_remove;
@@ -195,11 +217,13 @@ public class MascotService extends Service {
                         removeImg.getLayoutParams().width = remove_img_width;
                         handler_longClick.removeCallbacks(runnable_longClick);
 
-                        if(inBounded){
+                        if (inBounded) {
 //                            if(MyDialog.active){
 //                                MyDialog.myDialog.finish();
 //                            }
-                            // todo code to remove layout from WindowManager
+                            if (isMascotExpanded) {
+                                windowManager.removeView(mascotView);
+                            }
 
                             stopService(new Intent(MascotService.this, MascotService.class));
                             inBounded = false;
@@ -210,22 +234,23 @@ public class MascotService extends Service {
                         int x_diff = x_cord - x_init_cord;
                         int y_diff = y_cord - y_init_cord;
 
-                        if(Math.abs(x_diff) < 5 && Math.abs(y_diff) < 5){
+                        if (Math.abs(x_diff) < 5 && Math.abs(y_diff) < 5) {
                             time_end = System.currentTimeMillis();
-                            if((time_end - time_start) < 300){
+                            if ((time_end - time_start) < 300) {
                                 chathead_click();
                             }
                         }
 
                         y_cord_Destination = y_init_margin + y_diff;
 
-                        int BarHeight =  getStatusBarHeight();
+                        int BarHeight = getStatusBarHeight();
                         if (y_cord_Destination < 0) {
                             y_cord_Destination = 0;
                         } else if (y_cord_Destination + (chatheadView.getHeight() + BarHeight) > szWindow.y) {
-                            y_cord_Destination = szWindow.y - (chatheadView.getHeight() + BarHeight );
+                            y_cord_Destination = szWindow.y - (chatheadView.getHeight() + BarHeight);
                         }
                         layoutParams.y = y_cord_Destination;
+                        lastYCord = y_cord_Destination;
 
                         inBounded = false;
                         resetPosition(x_cord);
@@ -249,7 +274,7 @@ public class MascotService extends Service {
     }
 
     private void resetPosition(int x_cord_now) {
-        if(x_cord_now <= szWindow.x / 2){
+        if (x_cord_now <= szWindow.x / 2) {
             isLeft = true;
             moveToLeft(x_cord_now);
 
@@ -260,30 +285,36 @@ public class MascotService extends Service {
         }
 
     }
-    private void moveToLeft(final int x_cord_now){
+
+    private void moveToLeft(final int x_cord_now) {
         final int x = szWindow.x - x_cord_now;
 
         new CountDownTimer(500, 5) {
             WindowManager.LayoutParams mParams = (WindowManager.LayoutParams) chatheadView.getLayoutParams();
+
             public void onTick(long t) {
-                long step = (500 - t)/5;
-                mParams.x = 0 - (int)(double)bounceValue(step, x );
+                long step = (500 - t) / 5;
+                mParams.x = 0 - (int) (double) bounceValue(step, x);
                 windowManager.updateViewLayout(chatheadView, mParams);
             }
+
             public void onFinish() {
                 mParams.x = 0;
                 windowManager.updateViewLayout(chatheadView, mParams);
             }
         }.start();
     }
-    private  void moveToRight(final int x_cord_now){
+
+    private void moveToRight(final int x_cord_now) {
         new CountDownTimer(500, 5) {
             WindowManager.LayoutParams mParams = (WindowManager.LayoutParams) chatheadView.getLayoutParams();
+
             public void onTick(long t) {
-                long step = (500 - t)/5;
-                mParams.x = szWindow.x + (int)(double)bounceValue(step, x_cord_now) - chatheadView.getWidth();
+                long step = (500 - t) / 5;
+                mParams.x = szWindow.x + (int) (double) bounceValue(step, x_cord_now) - chatheadView.getWidth();
                 windowManager.updateViewLayout(chatheadView, mParams);
             }
+
             public void onFinish() {
                 mParams.x = szWindow.x - chatheadView.getWidth();
                 windowManager.updateViewLayout(chatheadView, mParams);
@@ -291,7 +322,22 @@ public class MascotService extends Service {
         }.start();
     }
 
-    private double bounceValue(long step, long scale){
+
+    private void moveMascotToFront() {
+        windowManager.removeView(chatheadView);
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT);
+        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.x = 0;
+        params.y = lastYCord;
+        windowManager.addView(chatheadView, params);
+    }
+
+    private double bounceValue(long step, long scale) {
         double value = scale * java.lang.Math.exp(-0.055 * step) * java.lang.Math.cos(0.08 * step);
         return value;
     }
@@ -301,7 +347,8 @@ public class MascotService extends Service {
         return statusBarHeight;
     }
 
-    private void chathead_click(){
+    private void chathead_click() {
+
 //        if(MyDialog.active){
 //            MyDialog.myDialog.finish();
 //        }else{
@@ -309,16 +356,27 @@ public class MascotService extends Service {
 //            startActivity(it);
 //        }
 
-        Toast.makeText(MascotService.this, "Yo add to WindowManager", Toast.LENGTH_SHORT).show();
-        // todo code to add Layout in window manager
+
+            Toast.makeText(MascotService.this, "Yo add to WindowManager", Toast.LENGTH_SHORT).show();
+            // todo code to add Layout in window manager
+            if (isMascotExpanded)
+                closeMascot();
+            else openMascot();
+
+
     }
 
-    private void chathead_longclick(){
+    private void closeMascot() {
+        isMascotExpanded = false;
+        windowManager.removeView(mascotView);
+    }
+
+    private void chathead_longclick() {
         Log.d(TAG, "Into ChatHeadService.chathead_longclick() ");
 
         WindowManager.LayoutParams param_remove = (WindowManager.LayoutParams) removeView.getLayoutParams();
         int x_cord_remove = (szWindow.x - removeView.getWidth()) / 2;
-        int y_cord_remove = szWindow.y - (removeView.getHeight() + getStatusBarHeight() );
+        int y_cord_remove = szWindow.y - (removeView.getHeight() + getStatusBarHeight());
 
         param_remove.x = x_cord_remove;
         param_remove.y = y_cord_remove;
@@ -339,13 +397,15 @@ public class MascotService extends Service {
         // TODO Auto-generated method stub
         super.onDestroy();
 
-        if(chatheadView != null){
+        if (chatheadView != null) {
             windowManager.removeView(chatheadView);
         }
 
-        if(removeView != null){
+        if (removeView != null) {
             windowManager.removeView(removeView);
         }
+
+        Log.e(TAG, "onDestroy: ");
 
     }
 
