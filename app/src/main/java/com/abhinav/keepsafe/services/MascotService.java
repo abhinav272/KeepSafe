@@ -1,24 +1,37 @@
 package com.abhinav.keepsafe.services;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.ScaleAnimation;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.abhinav.keepsafe.R;
+import com.abhinav.keepsafe.Utils.AccountModel;
+import com.abhinav.keepsafe.Utils.KSDatabaseHelper;
+import com.abhinav.keepsafe.adapters.KSAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by abhinav.sharma on 9/23/2016.
@@ -33,6 +46,10 @@ public class MascotService extends Service {
     private boolean isLeft = true;
     private boolean isMascotExpanded = false;
     private int lastYCord = 0;
+    private WindowManager.LayoutParams paramRemove;
+    private List<AccountModel> accountModels;
+    private KSAdapter ksAdapter;
+    private RecyclerView recyclerView;
 
     @SuppressWarnings("deprecation")
 
@@ -51,20 +68,28 @@ public class MascotService extends Service {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         mascotView = (RelativeLayout) inflater.inflate(R.layout.mascot_frame_container, null);
         WindowManager.LayoutParams fragmentContainerParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
         mascotView.findViewById(R.id.app_bar).setVisibility(View.GONE);
         windowManager.addView(mascotView, fragmentContainerParams);
+//        windowManager.addView(removeView, paramRemove);
+//        addRemoveView();
         moveMascotToFront();
-        populateKSList();
+        populateKSList(mascotView);
 
     }
 
-    private void populateKSList() {
+    private void populateKSList(View view) {
+        accountModels = new ArrayList<>();
+        ksAdapter = new KSAdapter(getApplicationContext(), accountModels);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.setAdapter(ksAdapter);
+        new AllItemsFetcherTask(getApplicationContext());
 
     }
 
@@ -74,7 +99,7 @@ public class MascotService extends Service {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
         removeView = (RelativeLayout) inflater.inflate(R.layout.remove, null);
-        WindowManager.LayoutParams paramRemove = new WindowManager.LayoutParams(
+        paramRemove = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
@@ -82,9 +107,9 @@ public class MascotService extends Service {
                 PixelFormat.TRANSLUCENT);
         paramRemove.gravity = Gravity.TOP | Gravity.LEFT;
 
-        removeView.setVisibility(View.GONE);
+//        removeView.setVisibility(View.GONE);
+//        removeRemoveView();
         removeImg = (ImageView) removeView.findViewById(R.id.remove_img);
-        windowManager.addView(removeView, paramRemove);
 
 
         chatheadView = (RelativeLayout) inflater.inflate(R.layout.chathead, null);
@@ -125,7 +150,8 @@ public class MascotService extends Service {
                     Log.d(TAG, "Into runnable_longClick");
 
                     isLongclick = true;
-                    removeView.setVisibility(View.VISIBLE);
+//                    removeView.setVisibility(View.VISIBLE);
+                    addRemoveView();
                     chathead_longclick();
                 }
             };
@@ -211,8 +237,10 @@ public class MascotService extends Service {
                         windowManager.updateViewLayout(chatheadView, layoutParams);
                         break;
                     case MotionEvent.ACTION_UP:
+//                        removeView.setVisibility(View.GONE);
+                        if(isLongclick)
+                            removeRemoveView();
                         isLongclick = false;
-                        removeView.setVisibility(View.GONE);
                         removeImg.getLayoutParams().height = remove_img_height;
                         removeImg.getLayoutParams().width = remove_img_width;
                         handler_longClick.removeCallbacks(runnable_longClick);
@@ -222,7 +250,7 @@ public class MascotService extends Service {
 //                                MyDialog.myDialog.finish();
 //                            }
                             if (isMascotExpanded) {
-                                windowManager.removeView(mascotView);
+                                closeMascot();
                             }
 
                             stopService(new Intent(MascotService.this, MascotService.class));
@@ -348,27 +376,22 @@ public class MascotService extends Service {
     }
 
     private void chathead_click() {
-
-//        if(MyDialog.active){
-//            MyDialog.myDialog.finish();
-//        }else{
-//            Intent it = new Intent(this,MyDialog.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//            startActivity(it);
-//        }
-
-
-            Toast.makeText(MascotService.this, "Yo add to WindowManager", Toast.LENGTH_SHORT).show();
-            // todo code to add Layout in window manager
-            if (isMascotExpanded)
-                closeMascot();
-            else openMascot();
-
-
+        if (isMascotExpanded)
+            closeMascot();
+        else openMascot();
     }
 
     private void closeMascot() {
         isMascotExpanded = false;
         windowManager.removeView(mascotView);
+    }
+
+    private void addRemoveView() {
+        windowManager.addView(removeView, paramRemove);
+    }
+
+    private void removeRemoveView() {
+        windowManager.removeView(removeView);
     }
 
     private void chathead_longclick() {
@@ -401,9 +424,9 @@ public class MascotService extends Service {
             windowManager.removeView(chatheadView);
         }
 
-        if (removeView != null) {
-            windowManager.removeView(removeView);
-        }
+//        if (removeView != null) {
+//            windowManager.removeView(removeView);
+//        }
 
         Log.e(TAG, "onDestroy: ");
 
@@ -415,5 +438,31 @@ public class MascotService extends Service {
         // TODO Auto-generated method stub
         Log.d(TAG, "ChatHeadService.onBind()");
         return null;
+    }
+
+    public class AllItemsFetcherTask extends AsyncTask<Void, Void, List<AccountModel>> {
+
+        private Context mContext;
+
+        public AllItemsFetcherTask(Context context){
+            mContext = context;
+        }
+
+        @Override
+        protected List<AccountModel> doInBackground(Void... params) {
+            return KSDatabaseHelper.getInstance(mContext).getAllItems();
+        }
+
+        @Override
+        protected void onPostExecute(List<AccountModel> list) {
+            super.onPostExecute(list);
+            if (list != null) {
+                accountModels.clear();
+                for (AccountModel model : list) {
+                    accountModels.add(model);
+                }
+                ksAdapter.notifyDataSetChanged();
+            }
+        }
     }
 }
