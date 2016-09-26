@@ -51,6 +51,7 @@ public class KSAdapter extends RecyclerView.Adapter<KSAdapter.KSViewHolder> {
                 holder.tranPassword.setText(accountModels.get(position).getAccountTranPassword());
                 break;
             default:
+                holder.password.setText(accountModels.get(position).getAccountPassword());
                 holder.tranPassword.setVisibility(View.GONE);
                 holder.ivTranPass.setVisibility(View.GONE);
                 break;

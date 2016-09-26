@@ -1,5 +1,6 @@
 package com.abhinav.keepsafe.services;
 
+import android.animation.Animator;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.WindowManager;
 import android.view.animation.ScaleAnimation;
 import android.widget.ArrayAdapter;
@@ -71,7 +73,9 @@ public class MascotService extends Service {
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
         mascotView.findViewById(R.id.app_bar).setVisibility(View.GONE);
@@ -89,7 +93,7 @@ public class MascotService extends Service {
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.setAdapter(ksAdapter);
-        new AllItemsFetcherTask(getApplicationContext());
+        new AllItemsFetcherTask(getBaseContext()).execute();
 
     }
 
